@@ -169,6 +169,7 @@ var htmlEscaper = strings.NewReplacer(
 	`<`, "&lt;",
 	`>`, "&gt;",
 	`"`, "&#34;", // "&#34;" is shorter than "&quot;".
+	"\r", "&#13;",
 )
 
 // EscapeString escapes special characters like "<" to become "&lt;". It
