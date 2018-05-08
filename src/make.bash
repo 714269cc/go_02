@@ -62,6 +62,10 @@
 # GOROOT_BOOTSTRAP: A working Go tree >= Go 1.4 for bootstrap.
 # If $GOROOT_BOOTSTRAP/bin/go is missing, $(go env GOROOT) is
 # tried for all "go" in $PATH. $HOME/go1.4 by default.
+#
+# GO_ASSUME_CROSSCOMPILING: Used to explicitly tell to the go build
+# system that a cross compilation is happening and it should honor the
+# different CC_FOR_TARGET even if architecture is the same.
 
 set -e
 
