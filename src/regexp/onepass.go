@@ -476,6 +476,7 @@ func compileOnePass(prog *syntax.Prog) (p *onePassProg) {
 	for _, inst := range prog.Inst {
 		if inst.Op == syntax.InstAlt || inst.Op == syntax.InstAltMatch {
 			hasAlt = true
+			break
 		}
 	}
 	// If we have alternates, every instruction leading to InstMatch must be EmptyEndText.
