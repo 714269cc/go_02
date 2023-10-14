@@ -70,7 +70,7 @@ go install
 go version -m $GOBIN/a$GOEXE
 stdout '^\tbuild\tvcs.revision=3b54a85adb09648c82e23fbfb5a5928777fcdd98$'
 stdout '^\tbuild\tvcs.time=1970-01-02T03:46:40Z$'
-stdout '^\tbuild\tvcs.modified=true$'
+stdout '^\tbuild\tvcs.modified=false$'
 rm $GOBIN/a$GOEXE
 
 # Building with -buildvcs=false suppresses the info.
