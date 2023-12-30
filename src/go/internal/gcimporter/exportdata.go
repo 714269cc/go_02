@@ -58,7 +58,7 @@ func FindExportData(r *bufio.Reader) (hdr string, size int, err error) {
 
 		// First entry should be __.PKGDEF.
 		if name != "__.PKGDEF" {
-			err = fmt.Errorf("go archive is missing __.PKGDEF")
+			err = errors.New("go archive is missing __.PKGDEF")
 			return
 		}
 
@@ -73,7 +73,7 @@ func FindExportData(r *bufio.Reader) (hdr string, size int, err error) {
 	// Now at __.PKGDEF in archive or still at beginning of file.
 	// Either way, line should begin with "go object ".
 	if !strings.HasPrefix(string(line), "go object ") {
-		err = fmt.Errorf("not a Go object file")
+		err = errors.New("not a Go object file")
 		return
 	}
 	size -= len(line)
