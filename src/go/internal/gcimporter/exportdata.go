@@ -8,6 +8,7 @@ package gcimporter
 
 import (
 	"bufio"
+	"errors"
 	"fmt"
 	"io"
 	"strconv"
@@ -28,7 +29,7 @@ func readGopackHeader(r *bufio.Reader) (name string, size int, err error) {
 	s := strings.TrimSpace(string(hdr[16+12+6+6+8:][:10]))
 	size, err = strconv.Atoi(s)
 	if err != nil || hdr[len(hdr)-2] != '`' || hdr[len(hdr)-1] != '\n' {
-		err = fmt.Errorf("invalid archive header")
+		err = errors.New("invalid archive header")
 		return
 	}
 	name = strings.TrimSpace(string(hdr[:16]))
