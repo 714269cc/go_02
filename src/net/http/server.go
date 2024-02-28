@@ -3161,11 +3161,11 @@ func AllowQuerySemicolons(h Handler) Handler {
 	})
 }
 
-// ListenAndServe listens on the TCP network address srv.Addr and then
+// ListenAndServe listens on the TCP network address s.Addr and then
 // calls [Serve] to handle requests on incoming connections.
 // Accepted connections are configured to enable TCP keep-alives.
 //
-// If srv.Addr is blank, ":http" is used.
+// If s.Addr is blank, ":http" is used.
 //
 // ListenAndServe always returns a non-nil error. After [Server.Shutdown] or [Server.Close],
 // the returned error is [ErrServerClosed].
@@ -3187,7 +3187,7 @@ func (s *Server) ListenAndServe() error {
 var testHookServerServe func(*Server, net.Listener) // used if non-nil
 
 // shouldConfigureHTTP2ForServe reports whether Server.Serve should configure
-// automatic HTTP/2. (which sets up the srv.TLSNextProto map)
+// automatic HTTP/2. (which sets up the s.TLSNextProto map)
 func (s *Server) shouldConfigureHTTP2ForServe() bool {
 	if s.TLSConfig == nil {
 		// Compatibility with Go 1.6:
@@ -3214,7 +3214,7 @@ var ErrServerClosed = errors.New("http: Server closed")
 
 // Serve accepts incoming connections on the Listener l, creating a
 // new service goroutine for each. The service goroutines read requests and
-// then call srv.Handler to reply to them.
+// then call s.Handler to reply to them.
 //
 // HTTP/2 support is only enabled if the Listener returns [*tls.Conn]
 // connections and they were configured with "h2" in the TLS
@@ -3288,7 +3288,7 @@ func (s *Server) Serve(l net.Listener) error {
 
 // ServeTLS accepts incoming connections on the Listener l, creating a
 // new service goroutine for each. The service goroutines perform TLS
-// setup and then read requests, calling srv.Handler to reply to them.
+// setup and then read requests, calling s.Handler to reply to them.
 //
 // Files containing a certificate and matching private key for the
 // server must be provided if neither the [Server]'s
@@ -3448,7 +3448,7 @@ func ListenAndServeTLS(addr, certFile, keyFile string, handler Handler) error {
 	return server.ListenAndServeTLS(certFile, keyFile)
 }
 
-// ListenAndServeTLS listens on the TCP network address srv.Addr and
+// ListenAndServeTLS listens on the TCP network address s.Addr and
 // then calls [ServeTLS] to handle requests on incoming TLS connections.
 // Accepted connections are configured to enable TCP keep-alives.
 //
@@ -3459,7 +3459,7 @@ func ListenAndServeTLS(addr, certFile, keyFile string, handler Handler) error {
 // concatenation of the server's certificate, any intermediates, and
 // the CA's certificate.
 //
-// If srv.Addr is blank, ":https" is used.
+// If s.Addr is blank, ":https" is used.
 //
 // ListenAndServeTLS always returns a non-nil error. After [Server.Shutdown] or
 // [Server.Close], the returned error is [ErrServerClosed].
@@ -3483,7 +3483,7 @@ func (s *Server) ListenAndServeTLS(certFile, keyFile string) error {
 }
 
 // setupHTTP2_ServeTLS conditionally configures HTTP/2 on
-// srv and reports whether there was an error setting it up. If it is
+// s and reports whether there was an error setting it up. If it is
 // not configured for policy reasons, nil is returned.
 func (s *Server) setupHTTP2_ServeTLS() error {
 	s.nextProtoOnce.Do(s.onceSetNextProtoDefaults)
@@ -3491,7 +3491,7 @@ func (s *Server) setupHTTP2_ServeTLS() error {
 }
 
 // setupHTTP2_Serve is called from (*Server).Serve and conditionally
-// configures HTTP/2 on srv using a more conservative policy than
+// configures HTTP/2 on s using a more conservative policy than
 // setupHTTP2_ServeTLS because Serve is called after tls.Listen,
 // and may be called concurrently. See shouldConfigureHTTP2ForServe.
 //
@@ -3512,8 +3512,8 @@ func (s *Server) onceSetNextProtoDefaults_Serve() {
 var http2server = godebug.New("http2server")
 
 // onceSetNextProtoDefaults configures HTTP/2, if the user hasn't
-// configured otherwise. (by setting srv.TLSNextProto non-nil)
-// It must only be called via srv.nextProtoOnce (use srv.setupHTTP2_*).
+// configured otherwise. (by setting s.TLSNextProto non-nil)
+// It must only be called via s.nextProtoOnce (use s.setupHTTP2_*).
 func (s *Server) onceSetNextProtoDefaults() {
 	if omitBundledHTTP2 {
 		return
