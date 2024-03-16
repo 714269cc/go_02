@@ -89,15 +89,25 @@ func TestIssue29551(t *testing.T) {
 
 func TestIssue66313(t *testing.T) {
 	tests := []struct {
-		sym      Sym
-		baseName string
+		sym          Sym
+		packageName  string
+		receiverName string
+		baseName     string
 	}{
 		{Sym{Name: "github.com/google/cel-go/parser/gen.(*CELLexer).(github.com/antlr/antlr4/runtime/Go/antlr/v4.reset)"},
-			"github.com/antlr/antlr4/runtime/Go/antlr/v4.reset"},
-		{Sym{Name: "ariga.io/atlas/sql/sqlclient.(*Tx).(database/sql.grabConn)"}, "database/sql.grabConn"},
+			"github.com/google/cel-go/parser/gen",
+			"(*CELLexer)",
+			"github.com/antlr/antlr4/runtime/Go/antlr/v4.reset",
+		},
+		{Sym{Name: "ariga.io/atlas/sql/sqlclient.(*Tx).(database/sql.grabConn)"},
+			"ariga.io/atlas/sql/sqlclient",
+			"(*Tx)",
+			"database/sql.grabConn"},
 	}
 
 	for _, tc := range tests {
+		assertString(t, fmt.Sprintf("package of %q", tc.sym.Name), tc.sym.PackageName(), tc.packageName)
+		assertString(t, fmt.Sprintf("receiver of %q", tc.sym.Name), tc.sym.ReceiverName(), tc.receiverName)
 		assertString(t, fmt.Sprintf("package of %q", tc.sym.Name), tc.sym.BaseName(), tc.baseName)
 	}
 }
