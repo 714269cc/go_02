@@ -154,7 +154,7 @@ func TestOIDEqualASN1OID(t *testing.T) {
 
 	for _, tt := range cases {
 		if eq := tt.oid.EqualASN1OID(tt.oid2); eq != tt.eq {
-			t.Errorf("(%v).Equal(%v) = %v, want %v", tt.oid, tt.oid2, eq, tt.eq)
+			t.Errorf("(%v).EqualASN1OID(%v) = %v, want %v", tt.oid, tt.oid2, eq, tt.eq)
 		}
 	}
 }
