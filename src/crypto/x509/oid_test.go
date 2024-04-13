@@ -123,6 +123,7 @@ func TestOIDEqual(t *testing.T) {
 }
 
 func TestOIDEqualASN1OID(t *testing.T) {
+	maxInt32PlusOne := int64(math.MaxInt32) + 1
 	var cases = []struct {
 		oid  OID
 		oid2 asn1.ObjectIdentifier
@@ -144,8 +145,14 @@ func TestOIDEqualASN1OID(t *testing.T) {
 		{oid: mustNewOIDFromInts(t, []uint64{2, 33, 257}), oid2: asn1.ObjectIdentifier{2, 33, 256}, eq: false},
 		{oid: mustNewOIDFromInts(t, []uint64{2, 33, 256}), oid2: asn1.ObjectIdentifier{2, 33, 257}, eq: false},
 
+		{oid: mustNewOIDFromInts(t, []uint64{1, 33}), oid2: asn1.ObjectIdentifier{1, 33, math.MaxInt32}, eq: false},
+		{oid: mustNewOIDFromInts(t, []uint64{1, 33, math.MaxInt32}), oid2: asn1.ObjectIdentifier{1, 33}, eq: false},
 		{oid: mustNewOIDFromInts(t, []uint64{1, 33, math.MaxInt32}), oid2: asn1.ObjectIdentifier{1, 33, math.MaxInt32}, eq: true},
-		{oid: mustNewOIDFromInts(t, []uint64{1, 33, math.MaxInt32 + 1}), oid2: asn1.ObjectIdentifier{1, 33, math.MaxInt32 + 1}, eq: false}, // component larger than 31 bits
+		{
+			oid:  mustNewOIDFromInts(t, []uint64{1, 33, math.MaxInt32 + 1}),
+			oid2: asn1.ObjectIdentifier{1, 33 /*convert to int, so that it compiles on 32bit*/, int(maxInt32PlusOne)},
+			eq:   false,
+		},
 
 		{oid: mustNewOIDFromInts(t, []uint64{1, 33, 256}), oid2: asn1.ObjectIdentifier{}, eq: false},
 		{oid: OID{}, oid2: asn1.ObjectIdentifier{1, 33, 256}, eq: false},
