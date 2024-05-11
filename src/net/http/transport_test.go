@@ -26,6 +26,7 @@ import (
 	"log"
 	mrand "math/rand"
 	"net"
+	"net/http"
 	. "net/http"
 	"net/http/httptest"
 	"net/http/httptrace"
@@ -6918,16 +6919,28 @@ func testHandlerAbortRacesBodyRead(t *testing.T, mode testMode) {
 		panic(ErrAbortHandler)
 	})).ts
 
+	newRequest := func() *http.Request {
+		const reqLen = 6 * 1024 * 1024
+		req, _ := NewRequest("POST", ts.URL, &io.LimitedReader{R: neverEnding('x'), N: reqLen})
+		req.ContentLength = reqLen
+		return req
+	}
+
 	var wg sync.WaitGroup
 	for i := 0; i < 2; i++ {
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
 			for j := 0; j < 10; j++ {
-				const reqLen = 6 * 1024 * 1024
-				req, _ := NewRequest("POST", ts.URL, &io.LimitedReader{R: neverEnding('x'), N: reqLen})
-				req.ContentLength = reqLen
+				req := newRequest()
 				resp, _ := ts.Client().Transport.RoundTrip(req)
+				if resp != nil {
+					resp.Body.Close()
+				}
+
+				req = newRequest()
+				req.Header.Set("Expect", "100-continue")
+				resp, _ = ts.Client().Transport.RoundTrip(req)
 				if resp != nil {
 					resp.Body.Close()
 				}
