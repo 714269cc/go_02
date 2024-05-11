@@ -332,6 +332,10 @@ type Cmd struct {
 	// See https://go.dev/blog/path-security
 	// and https://go.dev/issue/43724 for more context.
 	lookPathErr error
+
+	// calledLookExtensions indicates whether
+	// lookExtensions has been called in Cmd.Command.
+	calledLookExtensions bool
 }
 
 // A ctxResult reports the result of watching the Context associated with a
@@ -436,6 +440,7 @@ func Command(name string, arg ...string) *Cmd {
 		// Note that we cannot add an extension here for relative paths, because
 		// cmd.Dir may be set after we return from this function and that may cause
 		// the command to resolve to a different extension.
+		cmd.calledLookExtensions = true
 		lp, err := lookExtensions(name, "")
 		if lp != "" {
 			cmd.Path = lp
@@ -641,7 +646,7 @@ func (c *Cmd) Start() error {
 		return c.Err
 	}
 	lp := c.Path
-	if runtime.GOOS == "windows" && !filepath.IsAbs(c.Path) {
+	if runtime.GOOS == "windows" && !c.calledLookExtensions {
 		// If c.Path is relative, we had to wait until now
 		// to resolve it in case c.Dir was changed.
 		// (If it is absolute, we already resolved its extension in Command
