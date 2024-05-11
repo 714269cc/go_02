@@ -2693,9 +2693,9 @@ func (mux *ServeMux) ServeHTTP(w ResponseWriter, r *Request) {
 	}
 	var h Handler
 	if use121 {
-		h, _ = mux.mux121.findHandler(r)
+		h, r.Pattern = mux.mux121.findHandler(r)
 	} else {
-		h, _, r.pat, r.matches = mux.findHandler(r)
+		h, r.Pattern, r.pat, r.matches = mux.findHandler(r)
 	}
 	h.ServeHTTP(w, r)
 }
